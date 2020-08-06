@@ -33,16 +33,19 @@ C01Q01«Isto é teste«Sim«Não«Talvez«Depende«A«Conhecimentos Gerais«Test
 
 A estrutura do Banco de Dados é a seguinte:
 ```
-Campo			Tipo		Conteúdo
-identificacao	C99Q99	char(6)
-pergunta		Texto		text
-Opção A		Texto		text Opção A
-Opção B		Texto		text Opção B
-Opção C		Texto		text Opção C
-Opção D		Texto		text Opção D
-resposta		C		char(1)
-area			Texto		text Área de Conhecimento
-grupo			Texto		text Grupo dentro da Área
+--------------+-------+----------------------------
+Campo         | Tipo  | Conteúdo
+--------------+-------+----------------------------
+identificacao  C99Q99  char(6)
+pergunta       Texto   text
+Opção A        Texto   text Opção A
+Opção B        Texto   text Opção B
+Opção C        Texto   text Opção C
+Opção D        Texto   text Opção D
+resposta       C       char(1)
+area           Texto   text Área de Conhecimento
+grupo          Texto   text Grupo dentro da Área
+---------------------------------------------------
 ```
 
 ### Arquivo de configuração
