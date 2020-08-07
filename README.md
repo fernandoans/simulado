@@ -17,47 +17,80 @@ O programa (simulado.jar) deve ser inserido em uma pasta sem acentos ou espaços
 arquivos “hsqldb.jar” e “itextpdf-X.X.jar”
 
 ## Detalhes da Importação
-Um arquivo em formato CSV (texto) delimitado por “«” será utilizado para importação, caso o primeiro carácter da linha seja um “%” esta será desprezada na importação.
+Um arquivo em formato CSV (texto) delimitado por “«” será utilizado para importação. A formação do Arquivo deve ser obrigatoriamente a seguinte:
 
-A ordem dos campos é a seguinte:
+Primeira Linha deve conter o código (no formato: ProvaXX) e o título da prova:
 ```
-Código«Questão«RespA«RespB«RespC«RespD«Certa«Área«Grupo
+CódigoProva«Título
 ```
+
+As demais linhas:
+```
+CódigoProva«CódigoQuestão«Questão«RespA«RespB«RespC«RespD«Certa«Área«Grupo«Aula
+```
+
+Sendo:
+
+* CódigoProva: Código da Prova (no formato: ProvaXX) dessa questão
+* CódigoQuestão: Código da Questão para simples verificação
+* Questão: Pergunta
+* RespA: Opção 1
+* RespB: Opção 2
+* RespC: Opção 3
+* RespD: Opção 4
+* Certa: Qual a resposta correta (informar a letra)
+* Área: Área de Aprendizado dessa pergunta
+* Grupo: Grupo de Interesse dessa pergunta
+* Aula: Ao selecionar determinada aula no arquivo de configuração.
 
 Como por exemplo:
 ```
-C01Q01«Isto é teste«Sim«Não«Talvez«Depende«A«Conhecimentos Gerais«Teste
+Prova01«Prova Teste
+Prova01«C01Q01«Isto é teste«Sim«Não«Talvez«Depende«A«Conhecimentos Gerais«Teste
+Prova01«C01Q02«Isto é outro teste«Sim«Não«Talvez«Depende«C«Conhecimentos Gerais«Teste
 ```
 
 ### Base de Dados
 
 A estrutura do Banco de Dados é a seguinte:
 ```
---------------+-------+----------------------------
-Campo         | Tipo  | Conteúdo
---------------+-------+----------------------------
-identificacao  C99Q99  char(6)
-pergunta       Texto   text
-Opção A        Texto   text Opção A
-Opção B        Texto   text Opção B
-Opção C        Texto   text Opção C
-Opção D        Texto   text Opção D
-resposta       C       char(1)
-area           Texto   text Área de Conhecimento
-grupo          Texto   text Grupo dentro da Área
----------------------------------------------------
+Tabela: prova
+----------+--------+----------------------------
+Campo     | Tipo   | Conteúdo
+----------+--------+----------------------------
+id         Prova99  char(7)
+pergunta   Texto    varchar(60)
+------------------------------------------------
+
+Tabela: questoes
+----------+--------+----------------------------
+Campo     | Tipo   | Conteúdo
+----------+--------+----------------------------
+idProva    Prova99  char(7)
+idquestao  C99Q99   char(6)
+pergunta   Texto    varchar
+Opção A    Texto    varchar Opção A
+Opção B    Texto    varchar Opção B
+Opção C    Texto    varchar Opção C
+Opção D    Texto    varchar Opção D
+resposta   C        char(1)
+area       Texto    varchar(16) Área de Conhecimento
+grupo      Texto    varchar(13) Grupo dentro da Área
+aula       99       integer
+------------------------------------------------
 ```
 
 ### Arquivo de configuração
 
 Deve ser criado um arquivo chamado **opcao.sim** (formato texto) que contém os seguintes valores para o sistema:
+* PROVA=Prova99 – Código da prova
 * TEMPO=99999999 – Tempo total de prova
 * TOTAL_QUESTAO=999 – Número de questões para a prova
-* SIMULADO=99999999 – Código de segurança
-* AC=area1;area2;... – Descrição das áreas de conhecimento separadas por “;”
-* GP=grupo1;grupo2;... – Descrição dos grupos separados por “;”
+* AC=area1;area2;... – Descrição das áreas de conhecimento separadas por “;” (não obrigatório)
+* GP=grupo1;grupo2;... – Descrição dos grupos separados por “;” (não obrigatório)
+* AULA=99 – Descrição dos grupos separados por “;” (não obrigatório)
 
-# Requisitos de Tela
+# Requisitos de Tela para o Simulado
 
 ## Tela Inicial
 ![Inicial](tela01.png) 
@@ -93,8 +126,4 @@ Ao pressionar o botão SALVAR será gerado um arquivo com o nome “desempenho.p
 
 ## Simulados Disponíveis
 
-Disponibilizados os seguinte simulados:
-* Java Fundamentos - Com os conceitos básicos de Java.
-* OCWCD - Para a prova de Certificação Oracle Web Componnents Developer.
-* PMP - Para a prova de Certificação PMP.
-* Requisitos - Para a prova de Certificação de Requisitos.
+Em breve

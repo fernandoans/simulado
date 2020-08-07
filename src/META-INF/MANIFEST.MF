@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: lib/hsqldb.jar lib/itextpdf-5.1.1.jar
+Main-Class: simulado.SobreSistema
+
