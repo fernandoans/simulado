@@ -93,7 +93,7 @@ Deve ser criado um arquivo chamado **opcao.sim** (formato texto) que contém os 
 # Requisitos de Tela para o Simulado
 
 ## Tela Inicial
-![Inicial](tela01.png) 
+![Inicial](imagens/tela01.png) 
 
 O botão RESUMO é utilizado para o aluno acessar a Tela de Resumo. O botão FINALIZAR é utilizado para o aluno finalizar o simulado a qualquer momento, porém é necessário confirmar esta ação. Após a finalização do simulado a aplicação apresentará a Tela de Desempenho.
 
@@ -104,7 +104,7 @@ Quando o texto de um item da questão (pergunta ou opção) for muito grande, se
 ## Tela de Resumo
 Mostrar ao aluno o resumo do simulado, com os detalhes das questões, o texto truncado da pergunta, na opção escolhida se for o caso, o texto truncado da opção escolhida, do contrário mostrar um espaço no local, e se está marcada para revisão.
 
-![Resumo](tela02.png) 
+![Resumo](imagens/tela02.png) 
 
 Ao pressionar o botão VOLTAR, o aluno retorna para a Tela Inicial na mesma questão onde se encontrava. Se o aluno clicar em uma questão da tela, retorna para a Tela Inicial, porém o registro atual passará a ser o registro escolhido, ou seja, os dados na tela são “links” para os registros das questões. A tela possui uma barra de rolagem vertical para mostrar as 200 questões do simulado. As regras do processo de finalização do simulado é similar as regras do processo da Tela Inicial.
 
@@ -115,7 +115,7 @@ Esta tela é mostrada ao finalizar o simulado, apresentado o resumo do desempenh
 ```
 A quantidade de questões do grupo ou da área será obtida somando-se as informações de área de conhecimento e grupo de processo durante a importação do arquivo “questoes.csv” (ou algum outro formato tabulado).
 
-![Desempenho](tela03.png) 
+![Desempenho](imagens/tela03.png) 
 
 Ao pressionar o botão SALVAR será gerado um arquivo com o nome “desempenho.pdf”. Esse arquivo será dividido em 2 (duas) partes:
 1. Desempenho: As informações apresentadas na tela de desempenho.
@@ -151,13 +151,13 @@ java -jar simulado.jar
 ```
 
 Uma vez o programa se ative, é mostrada a seguinte tela:
-![Inicial](telaSis01.png)
+![Inicial](imagens/telaSis01.png)
 
 Pressionar o botão "Criar Base" para gerar os arquivos do Banco HSQLDB, uma vez realizada esta operação com sucesso, é mostrada a seguinte tela:
-![Inicial](telaSis02.png)
+![Inicial](imagens/telaSis02.png)
 
 Baixar o arquivo de questões disponíveis (formato CSV) e pressionar o botão "Importar Questões":
-![Inicial](importar.png)
+![Inicial](imagens/importar.png)
 
 Nesta tela, pressionar o botão "Selecionar" e localizar o arquivo CSV e pressionar o botão "Importar". Qualquer problema que ocorra, utilizar o botão "Limpar" para remover as questões dessa prova e repetir a operação de Importação. 
 
