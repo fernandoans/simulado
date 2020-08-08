@@ -55,29 +55,29 @@ Prova01«C01Q02«Isto é outro teste«Sim«Não«Talvez«Depende«C«Conheciment
 A estrutura do Banco de Dados é a seguinte:
 ```
 Tabela: prova
-----------+--------+----------------------------
-Campo     | Tipo   | Conteúdo
-----------+--------+----------------------------
-id         Prova99  char(7)
-pergunta   Texto    varchar(60)
-------------------------------------------------
+----------+--------+---------------+--------------------------------
+Campo     | Tipo   | Conteúdo      | Descrição 
+----------+--------+---------------+--------------------------------
+id         Prova99  char(7)         Chave da Prova
+pergunta   Texto    varchar(60)     Título da Prova
+------------------------------------------------------------------
 
 Tabela: questoes
-----------+--------+----------------------------
-Campo     | Tipo   | Conteúdo
-----------+--------+----------------------------
-idProva    Prova99  char(7)
-idquestao  C99Q99   char(6)
-pergunta   Texto    varchar
-Opção A    Texto    varchar Opção A
-Opção B    Texto    varchar Opção B
-Opção C    Texto    varchar Opção C
-Opção D    Texto    varchar Opção D
-resposta   C        char(1)
-area       Texto    varchar(16) Área de Conhecimento
-grupo      Texto    varchar(13) Grupo dentro da Área
-aula       99       integer
-------------------------------------------------
+----------+--------+---------------+--------------------------------
+Campo     | Tipo   | Conteúdo      | Descrição 
+----------+--------+---------------+--------------------------------
+idProva    Prova99  char(7)         Relacionamento com Prova
+idquestao  C99Q99   char(6)         Chave da Questão
+pergunta   Texto    VARCHAR(20000)  Pergunta
+Opção A    Texto    VARCHAR(20000)  Opção A
+Opção B    Texto    VARCHAR(20000)  Opção B
+Opção C    Texto    VARCHAR(20000)  Opção C
+Opção D    Texto    VARCHAR(20000)  Opção D
+resposta   C        char(1)         Opção correta (A|B|C|D)
+area       Texto    varchar(20)     Área de Conhecimento
+grupo      Texto    varchar(20)     Grupo dentro da Área
+aula       99       integer         Aula a que se refere a questão
+------------------------------------------------------------------
 ```
 
 ### Arquivo de configuração
@@ -126,4 +126,49 @@ Ao pressionar o botão SALVAR será gerado um arquivo com o nome “desempenho.p
 
 ## Simulados Disponíveis
 
-Em breve
+Java Fundamentos - Pasta: arquivosCSV\javaF - Prova01
+
+# Manual do SISTEMA
+
+Necessário ter o Java - mínimo versão JRE 8.0
+
+A pasta do Sistema é formada do seguinte modo:
+```
+[pastaRaiz] \ --- simulado.jar
+              |
+              +-- opcao.sim
+              |
+              +-- \lib +
+                       | 
+                       +-- hsqldb.jar
+                       |
+                       +-- itextpdf-5.1.1.jar  
+```
+
+Executar o programa com:
+```
+java -jar simulado.jar
+```
+
+Uma vez o programa se ative, é mostrada a seguinte tela:
+![Inicial](telaSis01.png)
+
+Pressionar o botão "Criar Base" para gerar os arquivos do Banco HSQLDB, uma vez realizada esta operação com sucesso, é mostrada a seguinte tela:
+![Inicial](telaSis02.png)
+
+Baixar o arquivo de questões disponíveis (formato CSV) e pressionar o botão "Importar Questões":
+![Inicial](importar.png)
+
+Nesta tela, pressionar o botão "Selecionar" e localizar o arquivo CSV e pressionar o botão "Importar". Qualquer problema que ocorra, utilizar o botão "Limpar" para remover as questões dessa prova e repetir a operação de Importação. 
+
+Se for realizado com sucesso, na tela principal as opções "Iniciar Simulado" e "Exportação" estarão habilitadas para realização do seu simulado conforme as opções do arquivo "opcao.sim".
+
+Boa Sorte na prova!
+
+## Software ainda em Desenvolvimento:
+
+**Versão 1.0:**
+
+* Criação do Arquivo.
+* Funções de Importação e Exportação.
+* É possível realizar uma prova porém a tela de resultados apresenta problemas.   
