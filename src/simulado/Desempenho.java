@@ -1,5 +1,8 @@
 package simulado;
 
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -7,10 +10,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
@@ -20,117 +27,105 @@ import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import simulado.acessor.Atributo;
+import simulado.acessor.Comuns;
 import simulado.acessor.Questao;
 import simulado.acessor.Tempo;
 
 public class Desempenho extends JDialog {
 
   private static final long serialVersionUID = 2L;
-  private JLabel objeto0;
+  private final String finFonte = "Helvetica";
   private JLabel labGasto;
-  private JLabel objeto2;
   private JLabel labAcertadas;
-  private JLabel objeto4;
   private JLabel labMedia;
   private JLabel labPercentual;
-  private JLabel objeto24;
-  private JButton btSalvar;
-  private JLabel labAC[];
-  private JLabel labGP[];
+  private JLabel[] labAC;
+  private JLabel[] labGP;
   private List<Questao> questoes;
   private int totalTempo;
   private int totalFeitos;
-  private Locale LOCAL;
+  private Locale local;
   private DecimalFormat format;
   private int acerto;
-  private int aAC[];
-  private int tAC[];
-  private int aGP[];
-  private int tGP[];
+  private int[] aAC;
+  private int[] tAC;
+  private int[] aGP;
+  private int[] tGP;
 
   public Desempenho(List<Questao> questoes, int totalTempo) {
-    labAC = new JLabel[Atributo.ac.size()];
-    labGP = new JLabel[Atributo.gp.size()];
-    LOCAL = new Locale("pt", "BR");
-    format = new DecimalFormat("##0.00", new DecimalFormatSymbols(LOCAL));
-    aAC = new int[Atributo.ac.size()];
-    tAC = new int[Atributo.ac.size()];
-    aGP = new int[Atributo.gp.size()];
-    tGP = new int[Atributo.gp.size()];
+    labAC = new JLabel[Comuns.atributo.getAc().size()];
+    labGP = new JLabel[Comuns.atributo.getGp().size()];
+    local = new Locale("pt", "BR");
+    format = new DecimalFormat("##0.00", new DecimalFormatSymbols(local));
+    aAC = new int[Comuns.atributo.getAc().size()];
+    tAC = new int[Comuns.atributo.getAc().size()];
+    aGP = new int[Comuns.atributo.getGp().size()];
+    tGP = new int[Comuns.atributo.getGp().size()];
     this.questoes = questoes;
     this.totalTempo = totalTempo;
     computarAcertos();
-    mostrar();
+    montarTela();
   }
 
-  public final void mostrar() {
+  private final void montarTela() {
     this.setTitle("Desempenho");
-    this.setResizable(false);
+    this.setSize(600, 350);
     this.setLocationRelativeTo(null);
     this.setModal(true);
 
-    getContentPane().setLayout(null);
-    getContentPane().setBackground(new java.awt.Color(238, 238, 238));
-    setSize(600, 380);
-    Tempo tempo = new Tempo();
-    objeto0 = new JLabel("De Tempo:");
-    objeto0.setBounds(new java.awt.Rectangle(10, 10, 80, 13));
-    getContentPane().add(objeto0, null);
-    tempo.setResHora(Atributo.tempo - totalTempo);
-    labGasto = new JLabel((new StringBuilder("Gasto: ")).append(tempo.transHora()).toString());
-    labGasto.setBounds(new java.awt.Rectangle(10, 30, 240, 13));
-    getContentPane().add(labGasto, null);
-    tempo.setResHora(totalFeitos != 0 ? tempo.getResHora() / totalFeitos : 0);
-    labMedia = new JLabel((new StringBuilder("M\351dia gasta por quest\343o: ")).append(tempo.transHora()).toString());
-    labMedia.setBounds(new java.awt.Rectangle(10, 47, 350, 13));
-    getContentPane().add(labMedia, null);
-    objeto2 = new JLabel("De Quest\365es:");
-    objeto2.setBounds(new java.awt.Rectangle(10, 80, 100, 13));
-    getContentPane().add(objeto2, null);
-    labAcertadas = new JLabel(
-        (new StringBuilder("Quantidade Acertadas: ")).append(acerto).append(" de ").append(questoes.size()).toString());
-    labAcertadas.setBounds(new java.awt.Rectangle(10, 105, 400, 13));
-    getContentPane().add(labAcertadas, null);
-    labPercentual = new JLabel((new StringBuilder("Percentual Acertado: "))
-        .append(mstPercentual(acerto, questoes.size())).append(" %").toString());
-    labPercentual.setBounds(new java.awt.Rectangle(10, 120, 400, 13));
-    getContentPane().add(labPercentual, null);
-    objeto4 = new JLabel("Por \301rea de conhecimento:");
-    objeto4.setBounds(new java.awt.Rectangle(10, 150, 200, 13));
-    getContentPane().add(objeto4, null);
-    int posTop = 175;
-    for (int i = 0; i < Atributo.ac.size(); i++) {
-      labAC[i] = new JLabel((new StringBuilder(String.valueOf((String) Atributo.ac.get(i)))).append(": ").append(aAC[i])
-          .append(" de ").append(tAC[i]).append(" (").append(mstPercentual(aAC[i], tAC[i])).append(" %)").toString());
-      labAC[i].setBounds(new java.awt.Rectangle(10, posTop, 280, 13));
-      getContentPane().add(labAC[i], null);
-      posTop += 15;
+    JPanel pnColuna1 = new JPanel(new GridLayout(10, 1));
+    pnColuna1.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+    pnColuna1.add(new JLabel("De Tempo:"));
+    int resHora = Comuns.atributo.getTempo() - totalTempo;
+    labGasto = new JLabel("Gasto: " + Tempo.fmtHora(resHora));
+    pnColuna1.add(labGasto);
+    resHora = totalFeitos != 0 ? resHora / totalFeitos : 0;
+    labMedia = new JLabel("M\351dia gasta por quest\343o: " + Tempo.fmtHora(resHora));
+    pnColuna1.add(labGasto);
+    pnColuna1.add(new JLabel(""));
+    pnColuna1.add(new JLabel("De Quest\365es:"));
+    labAcertadas = new JLabel("Quantidade Acertadas: " + acerto + " de " + questoes.size());
+    pnColuna1.add(labAcertadas);
+    labPercentual = new JLabel("Percentual Acertado: " + mstPercentual(acerto, questoes.size()) + " %");
+    pnColuna1.add(labMedia);
+    pnColuna1.add(new JLabel(""));
+    JButton btSalvar = new JButton("Salvar");
+    btSalvar.addActionListener(e -> salvar());
+    pnColuna1.add(obterCompPanel(btSalvar));
+
+    JPanel pnColuna2 = new JPanel();
+    pnColuna2.add(new JLabel("Por \301rea de conhecimento:"));
+    JTextArea areas = new JTextArea(8, 40);
+    int i = 0;
+    for (String area : Comuns.atributo.getAc()) {
+      labAC[i] = new JLabel(area + ": " + aAC[i] + " de " + tAC[i] + " (" + mstPercentual(aAC[i], tAC[i]) + " %)");
+      areas.append(labAC[i].getText() + '\n');
+      i += 1;
     }
-    objeto24 = new JLabel("Por grupo de processo:");
-    objeto24.setBounds(new java.awt.Rectangle(300, 10, 170, 13));
-    getContentPane().add(objeto24, null);
-    posTop = 35;
-    for (int i = 0; i < Atributo.gp.size(); i++) {
-      labGP[i] = new JLabel((new StringBuilder(String.valueOf((String) Atributo.gp.get(i)))).append(": ").append(aGP[i])
-          .append(" de ").append(tGP[i]).append(" (").append(mstPercentual(aGP[i], tGP[i])).append(" %)").toString());
-      labGP[i].setBounds(new java.awt.Rectangle(300, posTop, 280, 13));
-      getContentPane().add(labGP[i], null);
-      posTop += 15;
+    areas.setFont(new Font("Courier New", 0, 12));
+    pnColuna2.add(new JScrollPane(areas));
+    pnColuna2.add(new JLabel("Por grupo de processo:"));
+    JTextArea grupos = new JTextArea(8, 40);
+    i = 0;
+    for (String grupo : Comuns.atributo.getGp()) {
+      labGP[i] = new JLabel(grupo + ": " + aGP[i] + " de " + tGP[i] + " (" + mstPercentual(aGP[i], tGP[i]) + " %)");
+      grupos.append(labGP[i].getText() + '\n');
+      i += 1;
     }
-    btSalvar = new JButton("Salvar");
-    btSalvar.setBounds(new java.awt.Rectangle(490, 300, 100, 30));
-    getContentPane().add(btSalvar, null);
-    btSalvar.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent e) {
-        salvar();
-      }
-    });
+    grupos.setFont(new Font("Courier New", 0, 12));
+    pnColuna2.add(new JScrollPane(grupos));
+
     addWindowListener(new java.awt.event.WindowAdapter() {
+      @Override
       public void windowClosing(java.awt.event.WindowEvent e) {
         aoFechar();
       }
     });
+
+    this.setLayout(new GridLayout(1, 2));
+    this.add(pnColuna1);
+    this.add(pnColuna2);
+
     setVisible(true);
   }
 
@@ -142,41 +137,52 @@ public class Desempenho extends JDialog {
     if (val2 == 0) {
       return "0,00";
     }
-    return format.format(((double) val1 * 100D) / (double) val2).toString();
+    return format.format(((double) val1 * 100D) / (double) val2);
   }
+
+  public JPanel obterCompPanel(Component c) {
+    JPanel pn = new JPanel();
+    pn.add(c);
+    return pn;
+  }
+
+  // ---------------------------------
+  // Montar Relatório em PDF
+  // ---------------------------------
 
   private void salvar() {
     Document document = new Document(PageSize.A4, 50F, 50F, 50F, 50F);
     try {
       PdfWriter.getInstance(document, new FileOutputStream("desempenho.pdf"));
       document.open();
-      document.add(Image.getInstance(Atributo.getResource("simulado/imagens/simulpeq.png")));
-      document.add(new Paragraph(Atributo.prova, FontFactory.getFont("Helvetica", 22F, 1, new BaseColor(0, 83, 117))));
-      document.add(new Paragraph("Desempenho", FontFactory.getFont("Helvetica", 18F, 3, new BaseColor(0, 69, 98))));
-      document.add(new Paragraph("De Tempo:", FontFactory.getFont("Helvetica", 14F, 3, new BaseColor(190, 214, 218))));
+      document.add(Image.getInstance(Comuns.getResource("simulado/imagens/simulpeq.png")));
+      document.add(
+          new Paragraph(Comuns.atributo.getProva(), FontFactory.getFont(finFonte, 22F, 1, new BaseColor(0, 83, 117))));
+      document.add(new Paragraph("Desempenho", FontFactory.getFont(finFonte, 18F, 3, new BaseColor(0, 69, 98))));
+      document.add(new Paragraph("De Tempo:", FontFactory.getFont(finFonte, 14F, 3, new BaseColor(190, 214, 218))));
       document.add(new Paragraph(labGasto.getText()));
       document.add(new Paragraph(labMedia.getText()));
-      document.add(
-          new Paragraph("De Quest\365es:", FontFactory.getFont("Helvetica", 14F, 3, new BaseColor(190, 214, 218))));
+      document
+          .add(new Paragraph("De Quest\365es:", FontFactory.getFont(finFonte, 14F, 3, new BaseColor(190, 214, 218))));
       document.add(new Paragraph(labAcertadas.getText()));
       document.add(new Paragraph(labPercentual.getText()));
       document.add(new Paragraph("Por \301rea de conhecimento:",
-          FontFactory.getFont("Helvetica", 14F, 3, new BaseColor(190, 214, 218))));
-      for (int i = 0; i < Atributo.ac.size(); i++) {
+          FontFactory.getFont(finFonte, 14F, 3, new BaseColor(190, 214, 218))));
+      for (int i = 0; i < Comuns.atributo.getAc().size(); i++) {
         document.add(new Paragraph(labAC[i].getText()));
       }
-      document.add(new Paragraph("Por grupo de processo:",
-          FontFactory.getFont("Helvetica", 14F, 3, new BaseColor(190, 214, 218))));
-      for (int i = 0; i < Atributo.gp.size(); i++) {
+      document.add(
+          new Paragraph("Por grupo de processo:", FontFactory.getFont(finFonte, 14F, 3, new BaseColor(190, 214, 218))));
+      for (int i = 0; i < Comuns.atributo.getGp().size(); i++) {
         document.add(new Paragraph(labGP[i].getText()));
       }
       document.add(
-          new Paragraph("Resumo das Quest\365es", FontFactory.getFont("Helvetica", 18F, 1, new BaseColor(0, 69, 98))));
+          new Paragraph("Resumo das Quest\365es", FontFactory.getFont(finFonte, 18F, 1, new BaseColor(0, 69, 98))));
       String resultado = "";
       boolean acertou = false;
       Iterator<Questao> iterator = questoes.iterator();
       while (iterator.hasNext()) {
-        Questao qst = (Questao) iterator.next();
+        Questao qst = iterator.next();
         acertou = qst.isCorrigir();
         if (acertou) {
           resultado = "Correta";
@@ -201,6 +207,8 @@ public class Desempenho extends JDialog {
           case 68: // 'D'
             resultado = qst.getOpcaoD();
             break;
+          default: // Errada
+            System.out.println("Resposta Errada: " + qst.getResposta());
           }
           document.add(new Paragraph(
               (new StringBuilder(String.valueOf(qst.getPergunta()))).append(" - ").append(resultado).toString(),
@@ -216,42 +224,31 @@ public class Desempenho extends JDialog {
 
   private void computarAcertos() {
     totalFeitos = 0;
-    Iterator<Questao> iterator = questoes.iterator();
-    while (iterator.hasNext()) {
-      Questao qst = (Questao) iterator.next();
+    for (Questao qst : questoes) {
       if ("ABCD".indexOf(qst.getOpcaoEscolhida()) > -1) {
         totalFeitos++;
       }
-      for (int i = 0; i < Atributo.ac.size(); i++) {
-        if (!qst.getArea().equals(Atributo.ac.get(i))) {
-          continue;
-        }
-        tAC[i]++;
-        break;
-      }
-      for (int i = 0; i < Atributo.gp.size(); i++) {
-        if (!qst.getGrupo().equals(Atributo.gp.get(i))) {
-          continue;
-        }
-        tGP[i]++;
-        break;
-      }
-      if (qst.isCorrigir()) {
-        for (int i = 0; i < Atributo.ac.size(); i++) {
-          if (!qst.getArea().equals(Atributo.ac.get(i)))
-            continue;
-          aAC[i]++;
-          break;
-        }
-
-        for (int i = 0; i < Atributo.gp.size(); i++) {
-          if (!qst.getGrupo().equals(Atributo.gp.get(i))) {
-            continue;
+      int i = 0;
+      for (String area : Comuns.atributo.getAc()) {
+        if (qst.getArea().equals(area)) {
+          tAC[i]++;
+          if (qst.isCorrigir()) {
+            aAC[i]++;
           }
-          aGP[i]++;
           break;
         }
-        acerto++;
+        i += 1;
+      }
+      i = 0;
+      for (String grupo : Comuns.atributo.getGp()) {
+        if (qst.getGrupo().equals(grupo)) {
+          tGP[i]++;
+          if (qst.isCorrigir()) {
+            aGP[i]++;
+          }
+          break;
+        }
+        i += 1;
       }
     }
   }

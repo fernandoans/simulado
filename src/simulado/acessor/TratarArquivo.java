@@ -15,21 +15,23 @@ import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
-public class TratarArquivo {
+public final class TratarArquivo {
 
   private Connection con;
-  private final String NOME_ARQUIVO = "SIMPMP.db";
-
-  public TratarArquivo() {
-  }
+  private final String finNomeDB = "SIMPMP.db";
+  private final String finUsuario = "sa";
+  private final String finSenha = "";
+  private final String finCheckPoint = "CHECKPOINT;";
+  private final String finNomeArq = "SIMPMP.db.properties";
+  private final String finMsgImporte = "Importe as Questões da ";
 
   public boolean abrirDatabase() {
     try {
       Class.forName("org.hsqldb.jdbcDriver");
-      con = DriverManager.getConnection("jdbc:hsqldb:file:" + NOME_ARQUIVO, "sa", "");
+      con = DriverManager.getConnection("jdbc:hsqldb:file:" + finNomeDB, finUsuario, finSenha);
       return true;
     } catch (ClassNotFoundException e) {
-      JOptionPane.showMessageDialog(null, (new StringBuilder("Erro: ")).append(e.getMessage()).toString(), "Erro", 0);
+      JOptionPane.showMessageDialog(null, "Não encontrada a Biblioteca do HSQLDB", "Erro", 0);
       return false;
     } catch (SQLException e) {
       JOptionPane.showMessageDialog(null, (new StringBuilder("Erro: ")).append(e.getMessage()).toString(), "Erro", 0);
@@ -49,7 +51,7 @@ public class TratarArquivo {
             "CREATE TABLE questoes (prova CHAR(7), idquestao CHAR(6), pergunta VARCHAR(20000), opcaoA VARCHAR(20000), opcaoB VARCHAR(20000), opcaoC VARCHAR(20000), opcaoD VARCHAR(20000), resposta CHAR(1), area VARCHAR(20), grupo VARCHAR(20), aula INTEGER, PRIMARY KEY (prova, idquestao));");
         stm.close();
         stm = con.createStatement();
-        stm.execute("CHECKPOINT;");
+        stm.execute(finCheckPoint);
         con.commit();
         ret = true;
       } catch (SQLException ex) {
@@ -57,7 +59,7 @@ public class TratarArquivo {
       }
       fecharDatabase();
     }
-    Atributo.titulo = "Importe as Questões da " + Atributo.prova;
+    Comuns.atributo.setTitulo(finMsgImporte + Comuns.atributo.getProva());
     return ret;
   }
 
@@ -71,17 +73,23 @@ public class TratarArquivo {
 
   public List<Questao> obterDados(int totalQst) {
     List<Questao> lista = null;
-    if (ArquivosTexto.verificarExistencia("SIMPMP.db.properties")) {
+    if (ArquivosTexto.verificarExistencia(finNomeArq)) {
       lista = new ArrayList<>();
       if (abrirDatabase()) {
         try {
           Statement stm = con.createStatement();
           ResultSet res = stm.executeQuery(montaSql());
           int addQst = 0;
+          String area;
+          String grupo;
           while (res.next()) {
-            Questao questoes = new Questao(res.getString(1), res.getString(2), res.getString(3), res.getString(4),
-                res.getString(5), res.getString(6), res.getString(7).charAt(0), res.getString(8), res.getString(9));
+            area = res.getString(1);
+            grupo = res.getString(2);
+            Questao questoes = new Questao(res.getString(3), res.getString(4), res.getString(5), res.getString(6),
+                res.getString(7), res.getString(8), res.getString(9).charAt(0), area, grupo);
             lista.add(questoes);
+            Comuns.atributo.getAc().add(area);
+            Comuns.atributo.getGp().add(grupo);
             if (totalQst > -1 && ++addQst == totalQst)
               break;
           }
@@ -97,16 +105,16 @@ public class TratarArquivo {
   }
 
   private String montaSql() {
-    String monta = "SELECT idquestao, pergunta, opcaoA, opcaoB, opcaoC, opcaoD, resposta, area, grupo FROM questoes WHERE prova = '"
-        + Atributo.prova + "'";
-    if (Atributo.areaEsc.length() > 0) {
-      monta += " AND area = '" + Atributo.areaEsc + "'";
+    String monta = "SELECT area, grupo, idquestao, pergunta, opcaoA, opcaoB, opcaoC, opcaoD, resposta FROM questoes WHERE prova = '"
+        + Comuns.atributo.getProva() + "'";
+    if (Comuns.atributo.getAreaEsc().length() > 0) {
+      monta += " AND area = '" + Comuns.atributo.getAreaEsc() + "'";
     }
-    if (Atributo.grupoEsc.length() > 0) {
-      monta += " AND grupo = '" + Atributo.grupoEsc + "'";
+    if (Comuns.atributo.getGrupoEsc().length() > 0) {
+      monta += " AND grupo = '" + Comuns.atributo.getGrupoEsc() + "'";
     }
-    if (Atributo.aula > 0) {
-      monta += " AND aula = " + Atributo.aula;
+    if (Comuns.atributo.getAula() > 0) {
+      monta += " AND aula = " + Comuns.atributo.getAula();
     }
     return (new StringBuilder(String.valueOf(monta))).append(" ORDER BY rand()").toString();
   }
@@ -116,11 +124,11 @@ public class TratarArquivo {
     if (abrirDatabase()) {
       try {
         Statement stm = con.createStatement();
-        stm.executeUpdate("DELETE FROM questoes WHERE prova = '" + Atributo.prova + "'");
-        stm.executeUpdate("DELETE FROM prova WHERE id = '" + Atributo.prova + "'");
+        stm.executeUpdate("DELETE FROM questoes WHERE prova = '" + Comuns.atributo.getProva() + "'");
+        stm.executeUpdate("DELETE FROM prova WHERE id = '" + Comuns.atributo.getProva() + "'");
         stm.close();
         stm = con.createStatement();
-        stm.execute("CHECKPOINT;");
+        stm.execute(finCheckPoint);
         con.commit();
         ret = true;
       } catch (SQLException ex) {
@@ -128,17 +136,18 @@ public class TratarArquivo {
       }
       fecharDatabase();
     }
-    Atributo.titulo = "Importe as Questões da " + Atributo.prova;
+    Comuns.atributo.setTitulo(finMsgImporte + Comuns.atributo.getProva());
     return ret;
   }
 
   public int totalRegistro() {
     int total = 0;
-    if (ArquivosTexto.verificarExistencia("SIMPMP.db.properties")) {
+    if (ArquivosTexto.verificarExistencia(finNomeArq)) {
       if (abrirDatabase()) {
         try {
           Statement stm = con.createStatement();
-          ResultSet res = stm.executeQuery("SELECT count(*) FROM questoes WHERE prova = '" + Atributo.prova + "'");
+          ResultSet res = stm
+              .executeQuery("SELECT count(*) FROM questoes WHERE prova = '" + Comuns.atributo.getProva() + "'");
           if (res.next()) {
             total = res.getInt(1);
           }
@@ -154,12 +163,12 @@ public class TratarArquivo {
   }
 
   public void obterTitulo() {
-    if (ArquivosTexto.verificarExistencia("SIMPMP.db.properties")) {
-      String titulo = "Importe as Questões da " + Atributo.prova;
+    if (ArquivosTexto.verificarExistencia(finNomeArq)) {
+      String titulo = finMsgImporte + Comuns.atributo.getProva();
       if (abrirDatabase()) {
         try {
           Statement stm = con.createStatement();
-          ResultSet res = stm.executeQuery("SELECT titulo FROM prova WHERE id = '" + Atributo.prova + "'");
+          ResultSet res = stm.executeQuery("SELECT titulo FROM prova WHERE id = '" + Comuns.atributo.getProva() + "'");
           if (res.next()) {
             titulo = res.getString(1);
           }
@@ -170,13 +179,13 @@ public class TratarArquivo {
         }
         fecharDatabase();
       }
-      Atributo.titulo = titulo;
+      Comuns.atributo.setTitulo(titulo);
     }
   }
 
   public int importarDados(String nomArq) {
     int total = 0;
-    if (ArquivosTexto.verificarExistencia("SIMPMP.db.properties")) {
+    if (ArquivosTexto.verificarExistencia(finNomeArq)) {
       if (abrirDatabase()) {
         try {
           BufferedReader arquivo = new BufferedReader(new FileReader(nomArq));
@@ -216,7 +225,7 @@ public class TratarArquivo {
           arquivo.close();
           pstm.close();
           Statement stm = con.createStatement();
-          stm.execute("CHECKPOINT;");
+          stm.execute(finCheckPoint);
           con.commit();
         } catch (Exception ex) {
           System.out.println((new StringBuilder("importarDados: ")).append(ex.getMessage()).toString());
@@ -230,13 +239,14 @@ public class TratarArquivo {
 
   public int exportarDados(String nomArq) {
     int total = 0;
-    if (ArquivosTexto.verificarExistencia("SIMPMP.db.properties")) {
+    if (ArquivosTexto.verificarExistencia(finNomeArq)) {
       if (abrirDatabase()) {
         try {
           FileWriter arquivo = new FileWriter(nomArq);
           Statement stm = con.createStatement();
           ResultSet res = stm.executeQuery(
-              "SELECT idquestao, pergunta, opcaoA, opcaoB, opcaoC, opcaoD, resposta, area, grupo, aula FROM questoes");
+              "SELECT idquestao, pergunta, opcaoA, opcaoB, opcaoC, opcaoD, resposta, area, grupo, aula FROM questoes WHERE prova = '"
+                  + Comuns.atributo.getProva() + "'");
           while (res.next()) {
             arquivo.write(res.getString(1) + "\253" + res.getString(2) + "\253" + res.getString(3) + "\253"
                 + res.getString(4) + "\253" + res.getString(5) + "\253" + res.getString(6) + "\253" + res.getString(7)

@@ -3,10 +3,7 @@ package simulado;
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FilenameFilter;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -15,17 +12,21 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import simulado.acessor.Atributo;
+import simulado.acessor.Comuns;
 import simulado.acessor.TratarArquivo;
 
 public class Importar extends JDialog {
 
-  private static final long serialVersionUID = 5L;
+  private static final long serialVersionUID = 6L;
   private JLabel arquivo;
   private JLabel registro;
 
   public Importar() {
-    this.setTitle("Importar Quest\365es para " + Atributo.prova);
+    montarTela();
+  }
+
+  private final void montarTela() {
+    this.setTitle("Importar Quest\365es para " + Comuns.atributo.getProva());
     this.setSize(481, 170);
     this.setLocationRelativeTo(null);
     this.setModal(true);
@@ -49,25 +50,13 @@ public class Importar extends JDialog {
     JPanel pnBotoes = new JPanel();
     JButton btSelecionar = new JButton("Selecionar");
     pnBotoes.add(btSelecionar);
-    btSelecionar.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        selecionar();
-      }
-    });
+    btSelecionar.addActionListener(e -> selecionar());
     JButton btImportar = new JButton("Importar");
     pnBotoes.add(btImportar);
-    btImportar.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        importar();
-      }
-    });
+    btImportar.addActionListener(e -> importar());
     JButton btLimpar = new JButton("Limpar");
     pnBotoes.add(btLimpar);
-    btLimpar.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        limpar();
-      }
-    });
+    btLimpar.addActionListener(e -> limpar());
 
     // Montagem na Tela
     this.add(pnCentral, BorderLayout.CENTER);
@@ -79,11 +68,7 @@ public class Importar extends JDialog {
     FileDialog dig = new FileDialog(this, "Selecionar Arquivo", 0);
     dig.setDirectory("");
     dig.setFile("*.csv");
-    dig.setFilenameFilter(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return name.toLowerCase().endsWith(".csv");
-      }
-    });
+    dig.setFilenameFilter((dir, name) -> name.endsWith(".csv"));
     dig.setVisible(true);
     String nomArq = (new StringBuilder(String.valueOf(dig.getDirectory()))).append(dig.getFile()).toString();
     if ((new File(nomArq)).exists()) {

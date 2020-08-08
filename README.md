@@ -167,6 +167,12 @@ Boa Sorte na prova!
 
 ## Software ainda em Desenvolvimento:
 
+**Versão 1.1:**
+* Correção da tela de resultados.
+* Melhor visualização das Janelas.
+* Retirado todos os NullLayout isso permite a portabilidade para diversos monitores.
+* Melhor organização da Classe Atributo e separação de suas funções.
+
 **Versão 1.0:**
 
 * Criação do Arquivo.
