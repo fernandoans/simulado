@@ -68,7 +68,7 @@ public class Inicial extends JDialog implements Runnable {
   }
 
   private final void montarTela() {
-    this.setTitle(new StringBuilder(Comuns.atributo.getTitulo()).append(" - ").append("Versao 1.12").toString());
+    this.setTitle(Comuns.atributo.getTitulo() + " - " + Atributo.CFVERSAO);
     this.setSize(800, 620);
     this.setLocationRelativeTo(null);
     this.setModal(true);

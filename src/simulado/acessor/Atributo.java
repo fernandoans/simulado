@@ -5,8 +5,8 @@ import java.util.Set;
 
 public class Atributo {
 
-  public static final String COPYRIGHT = "2020 - Fernando Anselmo - Licença GPL";
-  public static final String CFVERSAO = "Versao 1.1";
+  public static final String COPYRIGHT = "2020 - Fernando Anselmo - Licen\347a GPL";
+  public static final String CFVERSAO = "Vers\343o 1.1";
   private String prova = "";
   private String titulo = "";
   private int tempo = 14400;
