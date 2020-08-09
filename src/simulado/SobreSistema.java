@@ -101,7 +101,7 @@ public class SobreSistema extends JFrame {
 
   public static void main(String[] args) {
     Comuns.carAtributo();
-    new SobreSistema();
+    new SobreSistema().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
   private void aoFechar() {

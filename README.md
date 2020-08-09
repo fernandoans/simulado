@@ -165,7 +165,7 @@ Se for realizado com sucesso, na tela principal as opções "Iniciar Simulado" e
 
 Boa Sorte na prova!
 
-## Software ainda em Desenvolvimento:
+## Software ainda em Sustentação:
 
 **Versão 1.1:**
 * Correção da tela de resultados.
